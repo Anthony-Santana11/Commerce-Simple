@@ -133,3 +133,4 @@ O frontend está 100% pronto e integrado com seu backend. Todas as funcionalidad
 
 **Tudo está funcionando conforme solicitado! 🎉**
 
+

@@ -3,7 +3,6 @@ package com.anthony.commercesimple.Controller;
 import com.anthony.commercesimple.Entity.ProductEntity;
 import com.anthony.commercesimple.UseCases.ProductsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;

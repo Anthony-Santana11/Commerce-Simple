@@ -1,4 +1,6 @@
 HELP.md
+SWAGGER_DOCUMENTATION.md
+frontend/INSTRUÇÕES.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
