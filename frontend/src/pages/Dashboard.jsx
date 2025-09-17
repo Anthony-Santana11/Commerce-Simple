@@ -11,7 +11,10 @@ import {
   DollarSign,
   FileText,
   Image,
-  Search
+  Search,
+  Users,
+  UserPlus,
+  Shield
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -19,6 +22,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showUserModal, setShowUserModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -27,6 +31,13 @@ const Dashboard = () => {
     description: '',
     price: '',
     imageURL: ''
+  });
+  const [userFormData, setUserFormData] = useState({
+    username: '',
+    password: '',
+    email: '',
+    name: '',
+    role: 'USER'
   });
 
   const { user } = useAuth();
@@ -56,6 +67,14 @@ const Dashboard = () => {
     }));
   };
 
+  const handleUserInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -67,9 +86,42 @@ const Dashboard = () => {
     setShowModal(false);
   };
 
+  const resetUserForm = () => {
+    setUserFormData({
+      username: '',
+      password: '',
+      email: '',
+      name: '',
+      role: 'USER'
+    });
+    setShowUserModal(false);
+  };
+
   const handleAddProduct = () => {
     resetForm();
     setShowModal(true);
+  };
+
+  const handleAddUser = () => {
+    resetUserForm();
+    setShowUserModal(true);
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    try {
+      await api.post('/register/user', userFormData);
+      setSuccess('Usuário criado com sucesso!');
+      resetUserForm();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      setError(error.response?.data || 'Erro ao criar usuário');
+      setTimeout(() => setError(''), 3000);
+    }
   };
 
   const handleEditProduct = (product) => {
@@ -163,13 +215,20 @@ const Dashboard = () => {
             </p>
           </div>
           
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center gap-4 mb-8">
             <button
               onClick={handleAddProduct}
               className="add-to-cart-btn"
             >
               <Plus size={16} />
               Novo Produto
+            </button>
+            <button
+              onClick={handleAddUser}
+              className="btn btn-primary"
+            >
+              <UserPlus size={16} />
+              Criar Usuário
             </button>
           </div>
             
@@ -453,6 +512,169 @@ const Dashboard = () => {
                   >
                     <Save size={18} />
                     <span>{editingProduct ? 'Atualizar' : 'Criar'} Produto</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* User Creation Modal */}
+      {showUserModal && (
+        <div className="modal-overlay">
+          <div className="modal-content dashboard-modal">
+            <form onSubmit={handleCreateUser}>
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <UserPlus className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        Criar Novo Usuário
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Adicione um novo usuário ao sistema
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={resetUserForm}
+                    className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="form-group">
+                      <label htmlFor="username" className="form-label">
+                        Nome de Usuário
+                      </label>
+                      <div className="input-container">
+                        <div className="input-icon-left">
+                          <Users className="h-5 w-5" />
+                        </div>
+                        <input
+                          id="username"
+                          name="username"
+                          type="text"
+                          required
+                          className="form-input"
+                          placeholder="Digite o nome de usuário"
+                          value={userFormData.username}
+                          onChange={handleUserInputChange}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="email" className="form-label">
+                        Email
+                      </label>
+                      <div className="input-container">
+                        <div className="input-icon-left">
+                          <FileText className="h-5 w-5" />
+                        </div>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          className="form-input"
+                          placeholder="Digite o email"
+                          value={userFormData.email}
+                          onChange={handleUserInputChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="name" className="form-label">
+                      Nome Completo
+                    </label>
+                    <div className="input-container">
+                      <div className="input-icon-left">
+                        <Users className="h-5 w-5" />
+                      </div>
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        required
+                        className="form-input"
+                        placeholder="Digite o nome completo"
+                        value={userFormData.name}
+                        onChange={handleUserInputChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="form-group">
+                      <label htmlFor="password" className="form-label">
+                        Senha
+                      </label>
+                      <div className="input-container">
+                        <div className="input-icon-left">
+                          <Shield className="h-5 w-5" />
+                        </div>
+                        <input
+                          id="password"
+                          name="password"
+                          type="password"
+                          required
+                          className="form-input"
+                          placeholder="Digite a senha"
+                          value={userFormData.password}
+                          onChange={handleUserInputChange}
+                          minLength={6}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="role" className="form-label">
+                        Tipo de Usuário
+                      </label>
+                      <div className="input-container">
+                        <div className="input-icon-left">
+                          <Shield className="h-5 w-5" />
+                        </div>
+                        <select
+                          id="role"
+                          name="role"
+                          className="form-input"
+                          value={userFormData.role}
+                          onChange={handleUserInputChange}
+                        >
+                          <option value="USER">Usuário Comum</option>
+                          <option value="ADMIN">Administrador</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-100 px-8 py-6 flex flex-col sm:flex-row sm:justify-end gap-4">
+                  <button
+                    type="button"
+                    onClick={resetUserForm}
+                    className="btn btn-secondary order-2 sm:order-1"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary order-1 sm:order-2 flex items-center justify-center gap-2"
+                  >
+                    <UserPlus size={18} />
+                    <span>Criar Usuário</span>
                   </button>
                 </div>
               </div>

@@ -40,12 +40,24 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
+      console.log('=== INÍCIO DO LOGIN ===');
+      console.log('Tentando fazer login com:', { username, password });
+      console.log('URL da API:', api.defaults.baseURL);
+      
       const response = await api.post('/auth/user', {
         username,
         password
       });
 
+      console.log('Resposta completa do servidor:', response);
+      console.log('Status da resposta:', response.status);
+      console.log('Dados da resposta:', response.data);
+      
       const { acess_token, expires_in, username: responseUsername, role, userId } = response.data;
+      
+      console.log('Token recebido:', acess_token);
+      console.log('Username recebido:', responseUsername);
+      console.log('Role recebido:', role);
       
       localStorage.setItem('access_token', acess_token);
       localStorage.setItem('token_expires_in', expires_in);
@@ -59,13 +71,25 @@ export const AuthProvider = ({ children }) => {
         userId: userId
       };
       
+      console.log('Dados do usuário salvos:', userData);
+      
       localStorage.setItem('user_data', JSON.stringify(userData));
       setUser(userData);
       setIsAuthenticated(true);
       
+      console.log('=== LOGIN CONCLUÍDO COM SUCESSO ===');
       return { success: true };
     } catch (error) {
-      console.error('Erro no login:', error);
+      console.error('=== ERRO NO LOGIN ===');
+      console.error('Erro completo:', error);
+      console.error('Tipo do erro:', typeof error);
+      console.error('Message do erro:', error.message);
+      console.error('Response do erro:', error.response);
+      console.error('Status do erro:', error.response?.status);
+      console.error('StatusText do erro:', error.response?.statusText);
+      console.error('Data do erro:', error.response?.data);
+      console.error('Config da requisição:', error.config);
+      
       return { 
         success: false, 
         message: error.response?.data || 'Erro ao fazer login. Verifique suas credenciais.' 
@@ -116,7 +140,13 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="spinner"></div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

@@ -70,7 +70,7 @@ function AppContent() {
         />
         <Route 
           path="/" 
-          element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />} 
+          element={<Navigate to="/login" replace />} 
         />
       </Routes>
     </div>

@@ -23,8 +23,20 @@ api.interceptors.request.use(
 
 // Interceptor para tratar respostas de erro
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('Resposta da API:', response);
+    return response;
+  },
   (error) => {
+    console.error('Erro da API:', error);
+    console.error('Detalhes do erro:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      config: error.config
+    });
+    
     if (error.response?.status === 401) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_data');
@@ -35,5 +47,6 @@ api.interceptors.response.use(
 );
 
 export default api;
+
 
 
