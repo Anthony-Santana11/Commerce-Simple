@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +69,7 @@ public class ProductsController {
         )
     })
     @PostMapping("/create")
-    public ResponseEntity<ProductEntity>createProduct(@RequestBody ProductEntity product) {
+    public ResponseEntity<ProductEntity>createProduct(@Valid @RequestBody ProductEntity product) {
         return ResponseEntity.ok(productsUseCase.creatProduct(product.getName(), product.getDescription(), product.getPrice(), product.getImageURL()));
     }
 

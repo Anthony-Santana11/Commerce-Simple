@@ -141,18 +141,50 @@ const Dashboard = () => {
     setSuccess('');
 
     try {
+      // Validar dados antes de enviar
+      if (!formData.name || formData.name.trim() === '') {
+        setError('Nome do produto é obrigatório');
+        return;
+      }
+      
+      if (!formData.description || formData.description.trim() === '') {
+        setError('Descrição do produto é obrigatória');
+        return;
+      }
+      
+      if (formData.description.length < 5 || formData.description.length > 200) {
+        setError('Descrição deve ter entre 5 e 200 caracteres');
+        return;
+      }
+      
+      if (!formData.price || isNaN(parseFloat(formData.price)) || parseFloat(formData.price) <= 0) {
+        setError('Preço deve ser um número válido maior que zero');
+        return;
+      }
+
       const productData = {
-        ...formData,
-        price: parseFloat(formData.price)
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        price: parseFloat(formData.price),
+        imageURL: formData.imageURL || ''
       };
+
+      console.log('=== DADOS DO PRODUTO ===');
+      console.log('FormData original:', formData);
+      console.log('ProductData processado:', productData);
+      console.log('Price convertido:', productData.price);
+      console.log('Tipo do price:', typeof productData.price);
+      console.log('É NaN?', isNaN(productData.price));
 
       if (editingProduct) {
         // Atualizar produto
         productData.productId = editingProduct.productId;
+        console.log('Atualizando produto:', productData);
         await api.put('/api/admin/products/update', productData);
         setSuccess('Produto atualizado com sucesso!');
       } else {
         // Criar novo produto
+        console.log('Criando produto:', productData);
         await api.post('/api/admin/products/create', productData);
         setSuccess('Produto criado com sucesso!');
       }
@@ -161,7 +193,11 @@ const Dashboard = () => {
       fetchProducts();
       setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
-      console.error('Erro ao salvar produto:', error);
+      console.error('=== ERRO AO SALVAR PRODUTO ===');
+      console.error('Erro completo:', error);
+      console.error('Response:', error.response);
+      console.error('Status:', error.response?.status);
+      console.error('Data:', error.response?.data);
       setError(error.response?.data || 'Erro ao salvar produto');
       setTimeout(() => setError(''), 3000);
     }
