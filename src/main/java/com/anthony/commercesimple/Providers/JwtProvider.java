@@ -37,10 +37,21 @@ public class JwtProvider {
         String username = decodedJWT.getSubject();
         String role = decodedJWT.getClaim("role").asString();
         
+        System.out.println("=== JWT AUTHENTICATION DEBUG ===");
+        System.out.println("Username: " + username);
+        System.out.println("Role from JWT: " + role);
+        
         if (username != null && role != null && !role.isEmpty()) {
-            var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+            // Garantir que o role tenha o prefixo ROLE_ para o Spring Security
+            String roleWithPrefix = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+            System.out.println("Role with prefix: " + roleWithPrefix);
+            
+            var authorities = List.of(new SimpleGrantedAuthority(roleWithPrefix));
+            System.out.println("Authorities: " + authorities);
+            
             return new UsernamePasswordAuthenticationToken(username, null, authorities);
         }
+        System.out.println("Authentication failed - missing username or role");
         return null;
     }
 
